@@ -12,8 +12,10 @@ const Dialog: React.FC<Props> = ({
 
     if(isOpen){
         return (
-            <div className="fixed top-[50%] bot-[50%] left-0 right-0 z-10">
-                {children}
+            <div className="fixed left-0 top-0 bg-slate-950/60 w-screen h-screen z-10">
+                <div className="bg-white relative top-1/2 left-1/2 -translate-x-[50%] -translate-y-[50%] z-11 w-max px-6 py-6">
+                    {children}
+                </div>
             </div>
         )
     } else {
