@@ -2,21 +2,25 @@ import React from "react"
 
 type Props = {
     buttonText: string,
-    onSubmit: any,
+    onSubmit: Function,
 }
 
 const LoginForm: React.FC<Props> = ({
     buttonText,
     onSubmit,
 }) => {
-    function handleSubmit(event: any) {
+    function handleSubmit(event: React.SyntheticEvent) {
         event.preventDefault()
 
-        console.log(event.target.elements)
+        const target = event.target as typeof event.target & {
+            username: { value: string };
+            password: { value: string }
+        }
 
-        const {username, password} = event.target.elements
+        const username = target.username;
+        const password = target.password;
         
-        onSubmit({
+        onSubmit ({
             username: username.value,
             password: password.value,
         })
@@ -24,16 +28,16 @@ const LoginForm: React.FC<Props> = ({
 
     return (
         <form onSubmit={handleSubmit} className="space-y-2">
-            <div>
-                <label htmlFor="username">Username</label>
-                <input type="text" id="username" placeholder=""/>
+            <div className="">
+                <label htmlFor="username" className="w-[50%] float-left">Username</label>
+                <input type="text" id="username" className="w-[50%] float-right" />
             </div>
-            <div>
-                <label htmlFor="password">Password</label>
-                <input type="password" id="password" placeholder="" />
+            <div className="">
+                <label htmlFor="password" className="w-[50%] float-left">Password</label>
+                <input type="password" id="password" className="w-[50%] float-right" />
             </div>
             <div className="text-center">
-                <button type="submit" className="border-2 px-2 border-black">{buttonText}</button>
+                <button type="submit" className="border-2 px-2 border-black mt-2">{buttonText}</button>
             </div>
         </form>
     )
