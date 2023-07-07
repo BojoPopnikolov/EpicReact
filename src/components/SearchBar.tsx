@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FaSearch, FaSpinner } from 'react-icons/fa'
+import { api } from './api';
 
 export enum BookStatus {
     Idle = 'idle',
@@ -7,27 +8,74 @@ export enum BookStatus {
     Success = 'success',
 }
 
-const SearchBar: React.FC = () => {
 
-    const [resultStatus, setResultStatus] = useState(BookStatus.Idle);
+// function client(endpoint: any, customConfig = {}) {
+    //     const config = {
+        //       method: 'GET',
+        //       ...customConfig,
+        //     }
+        
+        //     return window
+        //       .fetch(`${process.env.REACT_APP_API_URL}/${endpoint}`, config)
+        //       .then(response => response.json())
+        //   }  
+        
+const SearchBar: React.FC = () => {
+            
+    let books: any;
+    const [status, setStatus] = useState(BookStatus.Idle);
+    const [data, setData] = useState({books})
     const [query, setQuery] = useState(String);
     const [queried, setQueried] = useState(false);
 
-    console.log(query)
+    const isLoading = status === BookStatus.Loading;
+    const isSuccess = status === BookStatus.Success;
+
+    // useEffect(() => {
+    //     if(!queried){
+    //         return
+    //     }
+    //     console.log("log")
+    //     setStatus(BookStatus.Loading);
+    //     console.log(process.env.REACT_APP_API_URL)
+        
+    //     window
+    //         .fetch(`${process.env.REACT_APP_API_URL}/books?query=zack}`, {method: 'GET'})
+    //         .then(response => 
+    //             console.log("log2")    
+    //         )
+    //         .catch(err =>
+    //             console.log("err")
+    //         )
+    // }, [queried, query])
+    console.log(queried)
 
     useEffect(() => {
-        if(!queried){
-            return
+        if (!queried) {
+          return
         }
-    }, [queried])
+        console.log(query)
+        setStatus(BookStatus.Loading)
+        api(`http://localhost:8989/api/books?query=zack`).then(responseData => {
+          console.log(responseData)
+        //   setStatus('success')
+        })
+    }, [query, queried])
+
+    // useEffect(() => {
+    //     fetch('https://jsonplaceholder.typicode.com/todos/1')      
+    //     .then(response => response.json())      
+    //     .then(json => console.log(json))
+    // }, [])
 
     function handleSubmit(event: React.SyntheticEvent): void {
         event.preventDefault();
         setQueried(true);
 
-        setResultStatus(BookStatus.Loading);
-
-        setResultStatus(BookStatus.Success);
+        const target = event.target as typeof event.target & {
+            search: { value: string }
+        }
+        setQuery(target.search.value)
     }
 
     return(
@@ -45,22 +93,29 @@ const SearchBar: React.FC = () => {
                             text-black pl-3 py-2
                             placeholder:text-gray-600
                         "
-                        onChange={(event) => setQuery(event.target.value)}
                     />
                 </div>
                 <div className="absolute right-1 top-1/2 -translate-y-1/2 -translate-x-1/2">
                     <label>
                         <button className="bg-transparent">
-                            {resultStatus === BookStatus.Loading ? <FaSpinner className="spinner" /> : <FaSearch aria-label='search' />}
+                            {isLoading ? <FaSpinner className="spinner" /> : <FaSearch aria-label='search' />}
                         </button>
                     </label>
                 </div>
             </form>
-            {resultStatus === BookStatus.Success ? (
-                <p>Some books were found congrats</p>
-            ) : (
-                <p>No books found sowy</p>
-            )}
+            {/* {isSuccess ? (
+                data?.books?.length ? (
+                    <ul>
+                        {data.books.map((book:any) => (
+                            <li key={book.id} aria-label={book.title}>
+                                <div key={book.id}>{book}</div>
+                            </li>
+                        ))}
+                    </ul>
+                ) : (
+                    <p>No books found sowy :(</p>
+                )
+            ) : null} */}
         </div>
     )
 }
